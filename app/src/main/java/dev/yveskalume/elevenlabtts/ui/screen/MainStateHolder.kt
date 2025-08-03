@@ -60,8 +60,10 @@ class MainStateHolder(private val context: Context, private val coroutineScope: 
     fun playOrPause() {
         if (exoPlayer.isPlaying) {
             exoPlayer.pause()
+            _state.update { it.copy(isSpeaking = false) }
         } else {
             exoPlayer.play()
+            _state.update { it.copy(isSpeaking = true) }
         }
     }
 
@@ -95,14 +97,14 @@ class MainStateHolder(private val context: Context, private val coroutineScope: 
                 exoPlayer.prepare()
                 exoPlayer.play()
                 _state.update {
-                    it.copy(isPlaying = true)
+                    it.copy(isSpeaking = true)
                 }
 
                 exoPlayer.addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(playbackState: Int) {
                         if (playbackState == Player.STATE_ENDED) {
                             _state.update {
-                                it.copy(isPlaying = false)
+                                it.copy(isSpeaking = false)
                             }
                             exoPlayer.removeListener(this)
                             exoPlayer.clearMediaItems()
