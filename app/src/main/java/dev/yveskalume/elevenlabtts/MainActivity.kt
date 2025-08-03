@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dev.yveskalume.elevenlabtts.ui.screen.MainScreen
 import dev.yveskalume.elevenlabtts.ui.theme.ElevenlabTTSTheme
@@ -21,17 +19,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ElevenlabTTSTheme {
-                Surface(
-                    modifier = Modifier.safeDrawingPadding(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        MainScreen(
-                            modifier = Modifier
-                                .padding(innerPadding)
-                                .consumeWindowInsets(innerPadding)
-                        )
-                    }
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    MainScreen(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .consumeWindowInsets(innerPadding)
+                            .safeDrawingPadding()
+                    )
                 }
             }
         }
