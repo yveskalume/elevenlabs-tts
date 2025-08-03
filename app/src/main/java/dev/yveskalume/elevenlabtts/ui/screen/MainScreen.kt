@@ -75,7 +75,8 @@ private fun TextFieldSection(
                 Text("Enter Text", style = MaterialTheme.typography.bodyMedium)
             },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .weight(1f),
             textStyle = MaterialTheme.typography.bodyMedium
         )
 
