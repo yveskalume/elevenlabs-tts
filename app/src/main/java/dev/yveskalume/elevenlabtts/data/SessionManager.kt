@@ -2,10 +2,8 @@ package dev.yveskalume.elevenlabtts.data
 
 import android.util.Log
 import dev.yveskalume.elevenlabs.tts.model.Audio
-import dev.yveskalume.elevenlabs.tts.model.GenerationConfig
 import dev.yveskalume.elevenlabs.tts.model.TTSInitPayload
 import dev.yveskalume.elevenlabs.tts.model.TTSResponse
-import dev.yveskalume.elevenlabs.tts.model.VoiceSettings
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.CoroutineScope
@@ -45,56 +43,33 @@ private class SessionManagerImpl(
         message: String,
         onSuccess: (audio: Audio) -> Unit,
     ) {
-        Log.e("SendFirsBt",message)
-
         this.onSuccess = onSuccess
-        Log.e("SendFirsKalt",message)
 
         if (!client.checkSession()) {
-            Log.e("Beforeconnect",message)
             client.connect()
-            Log.e("SendFirst",message)
             sendFirstMessage(message)
             receiveLoop()
         } else {
-            Log.e("SendNew",message)
-
-            val messageJson = buildJsonObject {
-                put("message", message)
-            }
-            client.send(Frame.Text(messageJson.toString()))
+            client.send(Frame.Text(buildJson(message)))
         }
         sendCloseMessage()
     }
 
 
     private suspend fun sendCloseMessage() {
-        val messageJson = buildJsonObject {
-            put("message", "")
-        }
-        client.send(Frame.Text(messageJson.toString()))
+        client.send(Frame.Text(buildJson("")))
+    }
+
+    private fun buildJson(message: String): String {
+        return buildJsonObject {
+            put("message", message)
+        }.toString()
     }
 
     private suspend fun sendFirstMessage(message: String) {
-        val init = createTTSConfig(message)
+        val init = TTSInitPayload(message, apiKey)
         val value = json.encodeToString<TTSInitPayload>(init)
         client.send(Frame.Text(value))
-    }
-
-    private fun createTTSConfig(message: String): TTSInitPayload {
-        val init = TTSInitPayload(
-            text = message,
-            voiceSettings = VoiceSettings(
-                stability = 1.0,
-                similarityBoost = 0.8,
-                useSpeakerBoost = false
-            ),
-            generationConfig = GenerationConfig(
-                chunkLengthSchedule = listOf(120, 160, 250, 290)
-            ),
-            apiKey = apiKey
-        )
-        return init
     }
 
     private fun receiveLoop() {
